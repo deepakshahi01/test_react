@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-backend
+    ports:
+      - "3033:5000"
+    environment:
+      NODE_ENV: production
+      MONGO_URI: "mongodb://mongo:27017/app_db"
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    container_name: mongo-db
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: app_db
+      # If you want auth:
+      # MONGO_INITDB_ROOT_USERNAME: admin
+      # MONGO_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+  redis:
+    image: redis:8-alpine
+    container_name: mern-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  redis_data:
